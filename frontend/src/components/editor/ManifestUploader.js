@@ -1,5 +1,5 @@
 import * as React from 'react';
-import connect from 'react-redux/es/connect/connect';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import * as _ from 'lodash-es';
 import { safeLoad } from 'js-yaml';

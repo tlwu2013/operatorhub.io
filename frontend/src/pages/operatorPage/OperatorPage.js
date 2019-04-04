@@ -1,7 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import * as _ from 'lodash-es';
-import connect from 'react-redux/es/connect/connect';
+import { connect } from 'react-redux';
 import { Alert, Breadcrumb, EmptyState, Grid } from 'patternfly-react';
 
 import { helpers } from '../../common/helpers';

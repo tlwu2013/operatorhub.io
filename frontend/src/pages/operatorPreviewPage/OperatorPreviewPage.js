@@ -1,6 +1,6 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import connect from 'react-redux/es/connect/connect';
+import { connect } from 'react-redux';
 import { safeLoad } from 'js-yaml';
 import { Breadcrumb, Grid } from 'patternfly-react';
 
