@@ -19,19 +19,14 @@ class OperatorDeploymentEditPage extends React.Component {
 
   componentDidMount() {
     const { operator, storeEditorOperator } = this.props;
-    const name = _.get(this.props.match, 'params.deployment');
+    const name = helpers.transformPathedName(_.get(this.props.match, 'params.deployment', ''));
 
     let operatorDeployments = _.get(operator, 'spec.install.spec.deployments');
 
-    let deployment;
-    if (deployment === 'Add Deployment') {
-      deployment = _.find(operatorDeployments, { name: 'New Deployment' });
-    } else {
-      deployment = _.find(operatorDeployments, { name });
-    }
+    let deployment = _.find(operatorDeployments, { name });
 
     if (!deployment) {
-      deployment = { name: 'New Deployment' };
+      deployment = { name: 'Add Deployment' };
       if (!_.size(operatorDeployments)) {
         operatorDeployments = [];
       }

@@ -2,6 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import * as _ from 'lodash-es';
 import { Icon } from 'patternfly-react';
+import helpers from '../../common/helpers';
 
 class ListObjectEditor extends React.Component {
   constructor(props) {
@@ -32,7 +33,8 @@ class ListObjectEditor extends React.Component {
 
   editOperatorObject = operatorObject => {
     const { history, objectPage } = this.props;
-    history.push(`/editor/${objectPage}/${operatorObject.name}`);
+    const transformedName = helpers.transformNameForPath(operatorObject.name);
+    history.push(`/editor/${objectPage}/${transformedName}`);
   };
 
   removeOperatorObject = (event, operatorObject) => {

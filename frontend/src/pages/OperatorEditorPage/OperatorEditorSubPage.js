@@ -40,6 +40,15 @@ class OperatorEditorSubPage extends React.Component {
     this.props.history.push(`/editor/${this.props.lastPage}`);
   };
 
+  allSet = e => {
+    const { secondary } = this.props;
+    if (secondary) {
+      this.onEditor(e);
+      return;
+    }
+    this.onBack(e);
+  };
+
   onScroll = (scrollTop, topperHeight, toolbarHeight) => {
     const { headerHeight } = this.state;
     if (headerHeight !== topperHeight + toolbarHeight) {
@@ -81,16 +90,46 @@ class OperatorEditorSubPage extends React.Component {
         </Breadcrumb.Item>
       )}
       {this.props.tertiary && (
-        <Breadcrumb.Item
-          onClick={e => this.onBack(e)}
-          href={`${window.location.origin}/editor/${this.props.lastPage}`}
-        >
+        <Breadcrumb.Item onClick={e => this.onBack(e)} href={`${window.location.origin}/editor/${this.props.lastPage}`}>
           {this.props.lastPageTitle}
         </Breadcrumb.Item>
       )}
       <Breadcrumb.Item active>{this.props.title}</Breadcrumb.Item>
     </Breadcrumb>
   );
+
+  renderButtonBar() {
+    const { secondary, tertiary } = this.props;
+    if (secondary) {
+      return (
+        <div className="oh-operator-editor-page__button-bar">
+          <div>
+            <button className="oh-operator-editor-toolbar__button" onClick={e => this.onEditor(e)}>
+              Back to Operator Editor
+            </button>
+          </div>
+          <div>
+            <button className="oh-operator-editor-toolbar__button primary" onClick={e => this.allSet(e)}>
+              {`All set with ${this.props.title}`}
+            </button>
+          </div>
+        </div>
+      );
+    }
+    if (tertiary) {
+      return (
+        <div className="oh-operator-editor-page__button-bar">
+          <span />
+          <div>
+            <button className="oh-operator-editor-toolbar__button primary" onClick={e => this.onBack(e)}>
+              {`Back to ${this.props.lastPageTitle}`}
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  }
 
   render() {
     const { header, title, field, description, children } = this.props;
@@ -123,6 +162,7 @@ class OperatorEditorSubPage extends React.Component {
           <div className="oh-operator-editor-page__page-area" style={{ marginTop: titleHeight || 0 }}>
             {children}
           </div>
+          {this.renderButtonBar()}
         </div>
       </Page>
     );

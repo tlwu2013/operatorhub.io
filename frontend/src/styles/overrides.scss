@@ -103,3 +103,26 @@ p {
   color: $brand-danger;
 }
 
+.mde-preview .mde-preview-content table {
+  > pre {
+    background: $oh-color-background;
+    display: block;
+    font-size: 12px;
+    margin-left: 10px;
+    padding: 5px 10px;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  tr > th {
+    text-align: left;
+  }
+
+  th, td {
+    padding: 5px 15px;
+    word-break: break-word;
+    border: none;
+    border-bottom: 1px solid $color-pf-black-200;
+    vertical-align: top;
+  }
+}

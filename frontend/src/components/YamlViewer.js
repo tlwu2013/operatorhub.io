@@ -45,7 +45,6 @@ class YamlViewer extends React.Component {
     const { yaml, isPreview, initYaml, initYamlChanged, initContentHeight } = this.props;
     const currentYaml = yaml || (isPreview && initYaml) || '';
 
-    console.log(currentYaml);
     this.initEditor(currentYaml);
     this.setState({
       contentHeight: (isPreview && initContentHeight) || this.contentView.clientHeight,
@@ -64,13 +63,15 @@ class YamlViewer extends React.Component {
     if (this.ace) {
       this.ace.destroy();
       this.ace.container.parentNode.removeChild(this.ace.container);
-      this.ace = null;
       this.ace.off('blur', this.onYamlBlur);
+      this.ace = null;
       window.ace = null;
     }
 
-    this.doc.off('change', this.onYamlChange);
-    this.doc = null;
+    if (this.doc) {
+      this.doc.off('change', this.onYamlChange);
+      this.doc = null;
+    }
   }
 
   onYamlChange = (event, yamlDoc) => {

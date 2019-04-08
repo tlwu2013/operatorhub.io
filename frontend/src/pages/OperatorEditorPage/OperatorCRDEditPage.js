@@ -2,6 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import * as _ from 'lodash-es';
+import { safeDump, safeLoad } from 'js-yaml';
 
 import { helpers } from '../../common/helpers';
 import { reduxConstants } from '../../redux';
@@ -11,27 +12,24 @@ import OperatorEditorSubPage from './OperatorEditorSubPage';
 import ResourcesEditor from '../../components/editor/ResourcesEditor';
 import { operatorFieldDescriptions } from '../../utils/operatorDescriptors';
 import DescriptorsEditor from '../../components/editor/DescriptorsEditor';
+import YamlEditor from '../../components/YamlViewer';
 
 class OperatorCRDEditPage extends React.Component {
   state = {
-    crd: null
+    crd: null,
+    crdTemplateYaml: '',
+    crdTemplateYamlError: ''
   };
 
   componentDidMount() {
     const { operator, crdsField, objectType, storeEditorOperator } = this.props;
-    const name = _.get(this.props.match, 'params.crd');
-
+    const name = helpers.transformPathedName(_.get(this.props.match, 'params.crd', ''));
     let operatorCRDs = _.get(operator, crdsField);
 
-    let crd;
-    if (name === `Add ${objectType}`) {
-      crd = _.find(operatorCRDs, { name: 'New CRD' });
-    } else {
-      crd = _.find(operatorCRDs, { name });
-    }
+    let crd = _.find(operatorCRDs, { name });
 
     if (!crd) {
-      crd = { name: 'New CRD' };
+      crd = { name };
       if (!_.size(operatorCRDs)) {
         operatorCRDs = [];
       }
@@ -42,9 +40,31 @@ class OperatorCRDEditPage extends React.Component {
       storeEditorOperator(updatedOperator);
     }
 
-    this.setState({ crd });
+    const kind = _.get(crd, 'kind');
+    const examples = _.get(operator, 'metadata.annotations.alm-examples');
+    let crdTemplates;
+    if (_.isString(examples)) {
+      try {
+        crdTemplates = JSON.parse(examples);
+      } catch (e) {
+        crdTemplates = [];
+      }
+    } else {
+      crdTemplates = examples;
+    }
 
-    if (crd.name === 'New CRD') {
+    const crdTemplate = _.find(crdTemplates, { kind });
+
+    let crdTemplateYaml;
+    try {
+      crdTemplateYaml = safeDump(crdTemplate);
+    } catch (e) {
+      crdTemplateYaml = '';
+    }
+
+    this.setState({ crd, crdTemplateYaml });
+
+    if (crd.name === `Add ${objectType}`) {
       setTimeout(() => {
         this.nameInput.focus();
         this.nameInput.select();
@@ -78,6 +98,16 @@ class OperatorCRDEditPage extends React.Component {
 
   updateCrdActionDescriptors = crd => {
     this.updateCRD(crd.actionDescriptors, 'actionDescriptors');
+  };
+
+  onTemplateYamlChange = yaml => {
+    try {
+      const templates = safeLoad(yaml);
+      this.updateCRD(templates, 'metadata.annotations.alm-examples');
+      this.setState({ crdTemplateYaml: yaml, crdTemplateYamlError: '' });
+    } catch (e) {
+      this.setState({ crdTemplateYaml: yaml, crdTemplateYamlError: e.message });
+    }
   };
 
   validateField = field => {
@@ -145,7 +175,7 @@ class OperatorCRDEditPage extends React.Component {
           title="StatusDescriptors"
           singular="StatusDescriptor"
           description="A reference to fields in the status block of an object."
-          onUpdate={this.updateCrdSpecDescriptors}
+          onUpdate={this.updateCrdStatusDescriptors}
           descriptorsField="statusDescriptors"
         />
         <DescriptorsEditor
@@ -154,19 +184,31 @@ class OperatorCRDEditPage extends React.Component {
           singular="ActionDescriptor"
           description="A reference to fields in the action block of an object."
           noSeparator
-          onUpdate={this.updateCrdSpecDescriptors}
+          onUpdate={this.updateCrdActionDescriptors}
           descriptorsField="actionDescriptors"
         />
       </div>
     );
   };
 
-  renderTemplates = () => (
-    <React.Fragment>
-      <h3>CRD Templates</h3>
-      <p>{_.get(operatorFieldDescriptions, 'metadata.annotations.alm-examples')}</p>
-    </React.Fragment>
-  );
+  renderTemplates = () => {
+    const { crdTemplateYaml, crdTemplateYamlError } = this.state;
+
+    return (
+      <React.Fragment>
+        <h3>CRD Templates</h3>
+        <p>{_.get(operatorFieldDescriptions, 'metadata.annotations.alm-examples')}</p>
+        <YamlEditor
+          onChange={yaml => this.onTemplateYamlChange(yaml)}
+          editable
+          yaml={crdTemplateYaml}
+          error={crdTemplateYamlError}
+          allowClear
+        />
+      </React.Fragment>
+    );
+  };
+
   render() {
     const { crdsField, objectType, lastPage, lastPageTitle, history } = this.props;
     const { crd } = this.state;

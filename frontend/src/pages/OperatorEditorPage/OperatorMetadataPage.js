@@ -12,6 +12,7 @@ import LabelsEditor from '../../components/editor/LabelsEditor';
 import ImageEditor from '../../components/editor/ImageEditor';
 import { renderOperatorFormField } from './editorPageUtils';
 import OperatorEditorSubPage from './OperatorEditorSubPage';
+import DescriptionEditor from '../../components/editor/DescriptionEditor';
 
 const metadataDescription = `
   The metadata section contains general metadata around the name, version, and other info that aids users in the
@@ -113,11 +114,12 @@ const OperatorMetadataPage = ({ operator, formErrors, storeEditorOperator, store
     <form className="oh-operator-editor-form">
       {renderFormField('Display Name', 'spec.displayName', 'text')}
       {renderFormField('Short Description', 'metadata.annotations.description', 'text-area')}
-      {renderFormField('Long Description', 'spec.description', 'text-area', 5)}
       {renderFormField('Maturity', 'spec.maturity', 'text')}
       {renderFormField('Version', 'spec.version', 'text')}
-      {renderFormField('Replaces', 'spec.replaces', 'text')}
-      {renderFormField('Minimum Kubernetes Version', 'spec.MinKubeVersion', 'text')}
+      {renderFormField('Replaces (optional)', 'spec.replaces', 'text')}
+      {renderFormField('Minimum Kubernetes Version (optional)', 'spec.MinKubeVersion', 'text')}
+      {renderFormField('Long Description', 'spec.description', 'text-area', 5)}
+      <DescriptionEditor operator={operator} onUpdate={updateOperator} />
       <CapabilityEditor operator={operator} onUpdate={updateOperatorCapability} />
       <LabelsEditor
         operator={operator}
