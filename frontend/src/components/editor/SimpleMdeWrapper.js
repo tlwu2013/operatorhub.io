@@ -23,7 +23,7 @@ class SimpleMdeWrapper extends React.Component {
     this.simpleMDE.value(markdown);
 
     this.simpleMDE.codemirror.on('change', this.onMarkdownChange);
-    this.simpleMDE.codemirror.on('blur', this.onMarkdownChange);
+    this.simpleMDE.codemirror.on('blur', this.onMarkdownBlur);
 
     setTimeout(() => onReady(this.simpleMDE));
   }

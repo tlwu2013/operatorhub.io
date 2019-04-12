@@ -43,8 +43,12 @@ class OperatorEditorSubPage extends React.Component {
   };
 
   allSet = e => {
-    const { setSectionAllSet, section, secondary } = this.props;
+    const { validatePage, setSectionAllSet, section, secondary, showPageErrorsMessage } = this.props;
 
+    if (validatePage() === false) {
+      showPageErrorsMessage();
+      return;
+    }
     setSectionAllSet(section);
 
     if (secondary) {
@@ -105,11 +109,10 @@ class OperatorEditorSubPage extends React.Component {
   );
 
   renderButtonBar() {
-    const { secondary, tertiary, section, sectionStatus } = this.props;
+    const { secondary, tertiary, pageErrors } = this.props;
 
     if (secondary) {
-      const sectionError = sectionStatus[section] === EDITOR_STATUS.errors;
-      const allSetClasses = classNames('oh-operator-editor-toolbar__button primary', { disabled: sectionError });
+      const allSetClasses = classNames('oh-operator-editor-toolbar__button primary', { disabled: pageErrors });
 
       return (
         <div className="oh-operator-editor-page__button-bar">
@@ -119,7 +122,7 @@ class OperatorEditorSubPage extends React.Component {
             </button>
           </div>
           <div>
-            <button className={allSetClasses} disabled={sectionError} onClick={e => this.allSet(e)}>
+            <button className={allSetClasses} disabled={pageErrors} onClick={e => this.allSet(e)}>
               {`All set with ${this.props.title}`}
             </button>
           </div>
@@ -191,12 +194,14 @@ OperatorEditorSubPage.propTypes = {
   lastPage: PropTypes.string,
   lastPageTitle: PropTypes.string,
   section: PropTypes.string,
+  pageErrors: PropTypes.bool,
+  validatePage: PropTypes.func,
   children: PropTypes.node,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired
   }).isRequired,
-  sectionStatus: PropTypes.object,
   setSectionAllSet: PropTypes.func,
+  showPageErrorsMessage: PropTypes.func,
   storeKeywordSearch: PropTypes.func
 };
 
@@ -210,9 +215,11 @@ OperatorEditorSubPage.defaultProps = {
   lastPage: '',
   lastPageTitle: '',
   section: '',
+  pageErrors: false,
+  validatePage: helpers.noop,
   children: null,
-  sectionStatus: {},
   setSectionAllSet: helpers.noop,
+  showPageErrorsMessage: helpers.noop,
   storeKeywordSearch: helpers.noop
 };
 
@@ -227,6 +234,13 @@ const mapDispatchToProps = dispatch => ({
       type: reduxConstants.SET_EDITOR_SECTION_STATUS,
       section,
       status: EDITOR_STATUS.complete
+    }),
+  showPageErrorsMessage: () =>
+    dispatch({
+      type: reduxConstants.CONFIRMATION_MODAL_SHOW,
+      title: 'Errors',
+      heading: <span>There are errors or missing required fields on the page</span>,
+      confirmButtonText: 'OK'
     })
 });
 

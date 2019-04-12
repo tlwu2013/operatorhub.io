@@ -109,12 +109,19 @@ class LabelsEditor extends React.Component {
   };
 
   renderLabel = (operatorLabel, index) => {
-    const { keyField, keyPlaceholder, valueField, valuePlaceholder } = this.props;
+    const { field, keyField, keyPlaceholder, valueField, valuePlaceholder, formErrors } = this.props;
     const removeLabelClass = classNames('remove-label', { disabled: this.areLabelsEmpty() });
+
+    const errors = _.get(formErrors, field, []);
+
+    const keyError = _.get(errors, [0, 'key']);
+    const valueError = _.get(errors, [0, 'value']);
+    const keyClasses = classNames('form-group col-sm-6', { 'oh-operator-editor-form__field--error': keyError });
+    const valueClasses = classNames('form-group col-sm-6', { 'oh-operator-editor-form__field--error': valueError });
 
     return (
       <div key={index} className="oh-operator-editor-form__field row">
-        <div className="form-group col-sm-6">
+        <div className={keyClasses}>
           <input
             className="form-control"
             type="text"
@@ -123,8 +130,9 @@ class LabelsEditor extends React.Component {
             onBlur={() => this.onFieldBlur(operatorLabel)}
             placeholder={keyPlaceholder}
           />
+          {keyError && <div className="oh-operator-editor-form__error-block">keyError</div>}
         </div>
-        <div className="form-group col-sm-6">
+        <div className={valueClasses}>
           <div className="oh-operator-editor-form__label-key-col">
             <input
               className="form-control"
@@ -139,6 +147,7 @@ class LabelsEditor extends React.Component {
               <span className="sr-only">Remove Label</span>
             </a>
           </div>
+          {valueError && <div className="oh-operator-editor-form__error-block">{valueError}</div>}
         </div>
       </div>
     );
@@ -178,7 +187,8 @@ LabelsEditor.propTypes = {
   keyPlaceholder: PropTypes.string,
   valueField: PropTypes.string,
   valueLabel: PropTypes.string,
-  valuePlaceholder: PropTypes.string
+  valuePlaceholder: PropTypes.string,
+  formErrors: PropTypes.object
 };
 
 LabelsEditor.defaultProps = {
@@ -187,7 +197,8 @@ LabelsEditor.defaultProps = {
   keyPlaceholder: 'e.g. KEY',
   valueField: 'value',
   valueLabel: 'Value',
-  valuePlaceholder: 'e.g. VALUE'
+  valuePlaceholder: 'e.g. VALUE',
+  formErrors: {}
 };
 
 export default LabelsEditor;

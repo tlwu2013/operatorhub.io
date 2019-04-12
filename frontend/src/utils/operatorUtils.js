@@ -79,12 +79,31 @@ const normalizeOperator = operator => {
   };
 };
 
+const urlRegExp = new RegExp(
+  '^(?:(?:(?:https?|ftp):)?//)' + // protocol
+  '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|' + // domain name
+  '((\\d{1,3}\\.){3}\\d{1,3}))' + // ip (v4) address
+  '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port
+  '(\\?[;&amp;a-z\\d%_.~+=-]*)?' + // query string
+    '(\\#[-a-z\\d_]*)?$',
+  'i'
+);
+
+const emailRegExp = new RegExp(
+  "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|" +
+    '"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")' +
+    '@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?' +
+    '|\\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\\.)' +
+    '{3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:' +
+    '[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\\])'
+);
+
 const getFieldValueError = (operator, field) => {
   const value = _.get(operator, field);
 
-  const regex = _.get(_.get(operatorFieldValidators, field), 'regex');
-  if (regex) {
-    if (!regex.test(value)) {
+  const fieldRegex = _.get(_.get(operatorFieldValidators, field), 'regex');
+  if (fieldRegex) {
+    if (!fieldRegex.test(value)) {
       return _.get(_.get(operatorFieldValidators, field), 'regexErrorMessage');
     }
   }
@@ -147,6 +166,8 @@ const getFieldMissing = (operator, field) => {
 export {
   generateIdFromVersionedName,
   normalizeOperator,
+  emailRegExp,
+  urlRegExp,
   validCapabilityStrings,
   validateOperator,
   getFieldValueError,

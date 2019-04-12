@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import { Alert, FormControl, Grid, HelpBlock, Modal } from 'patternfly-react';
 import { helpers } from '../../common/helpers';
+import { urlRegExp } from '../../utils/operatorUtils';
 
 class ImportYamlModal extends React.Component {
   state = {
@@ -47,19 +48,7 @@ class ImportYamlModal extends React.Component {
     xhr.send();
   };
 
-  validURL = url => {
-    const urlRegExp = new RegExp(
-      '^(?:(?:(?:https?|ftp):)?//)' + // protocol
-      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|' + // domain name
-      '((\\d{1,3}\\.){3}\\d{1,3}))' + // ip (v4) address
-      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port
-      '(\\?[;&amp;a-z\\d%_.~+=-]*)?' + // query string
-        '(\\#[-a-z\\d_]*)?$',
-      'i'
-    );
-
-    return urlRegExp.test(url);
-  };
+  validURL = url => urlRegExp.test(url);
 
   urlChange = e => {
     const url = e.target.value;

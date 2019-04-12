@@ -16,18 +16,20 @@ import DescriptionEditor from '../../components/editor/DescriptionEditor';
 const METADATA_FIELDS = [
   'spec.displayName',
   'metadata.annotations.description',
-  'spec.description',
   'spec.maturity',
   'spec.version',
   'spec.replaces',
   'spec.MinKubeVersion',
+  'spec.description',
   'metadata.annotations.capabilities',
-  'spec.installModes',
   'spec.labels',
   'spec.selector.matchLabels',
   'metadata.annotations.categories',
   'spec.keywords',
-  'spec.icon'
+  'spec.icon',
+  'spec.links',
+  'spec.provider.name',
+  'spec.maintainers'
 ];
 
 const metadataDescription = `
@@ -94,6 +96,19 @@ class OperatorMetadataPage extends React.Component {
     } else {
       setSectionStatus(EDITOR_STATUS.pending);
     }
+  };
+
+  validatePage = () => {
+    const { formErrors, setSectionStatus } = this.props;
+
+    const metadataErrors = _.some(METADATA_FIELDS, metadataField => _.get(formErrors, metadataField));
+    if (metadataErrors) {
+      this.originalStatus = EDITOR_STATUS.errors;
+      setSectionStatus(EDITOR_STATUS.errors);
+      return false;
+    }
+
+    return true;
   };
 
   updateOperatorImage = icon => {
@@ -175,7 +190,9 @@ class OperatorMetadataPage extends React.Component {
   };
 
   renderMetadataFields = () => {
+    const { formErrors } = this.props;
     const { workingOperator } = this.state;
+
     return (
       <form className="oh-operator-editor-form">
         {this.renderFormField('Display Name', 'spec.displayName', 'text')}
@@ -184,8 +201,7 @@ class OperatorMetadataPage extends React.Component {
         {this.renderFormField('Version', 'spec.version', 'text')}
         {this.renderFormField('Replaces (optional)', 'spec.replaces', 'text')}
         {this.renderFormField('Minimum Kubernetes Version (optional)', 'spec.MinKubeVersion', 'text')}
-        {this.renderFormField('Long Description', 'spec.description', 'text-area', 5)}
-        <DescriptionEditor operator={workingOperator} onUpdate={this.updateOperator} />
+        <DescriptionEditor operator={workingOperator} onUpdate={this.updateOperator} onValidate={this.validateField} />
         <CapabilityEditor operator={workingOperator} onUpdate={this.updateOperatorCapability} />
         <LabelsEditor
           operator={workingOperator}
@@ -193,6 +209,7 @@ class OperatorMetadataPage extends React.Component {
           title="Labels (optional)"
           singular="Label"
           field="spec.labels"
+          formErrors={formErrors}
         />
         <LabelsEditor
           operator={workingOperator}
@@ -200,6 +217,7 @@ class OperatorMetadataPage extends React.Component {
           title="Selectors (optional)"
           singular="Selector"
           field="spec.selector.matchLabels"
+          formErrors={formErrors}
         />
         <h3>Categories and Keywords</h3>
         {this.renderFormField('Categories', 'metadata.annotations.categories', 'multi-select', categoryOptions)}
@@ -218,6 +236,7 @@ class OperatorMetadataPage extends React.Component {
           valueField="url"
           valueLabel="URL"
           valuePlaceholder="e.g. https://coreos.com/etcd"
+          formErrors={formErrors}
         />
         <h3>Contact Information</h3>
         {this.renderFormField('Provider Name', 'spec.provider.name', 'text')}
@@ -233,13 +252,21 @@ class OperatorMetadataPage extends React.Component {
           valueField="email"
           valueLabel="Email"
           valuePlaceholder="e.g. support@example.com"
+          formErrors={formErrors}
         />
       </form>
     );
   };
 
   render() {
-    const { history } = this.props;
+    const { formErrors, operator, history } = this.props;
+
+    const metadataErrorFields = _.filter(METADATA_FIELDS, metadataField => _.get(formErrors, metadataField));
+    const pageErrors = _.some(
+      metadataErrorFields,
+      errorField => this.originalStatus !== EDITOR_STATUS.empty || _.get(operator, errorField) !== undefined
+    );
+
     return (
       <OperatorEditorSubPage
         title="Operator Metadata"
@@ -247,6 +274,8 @@ class OperatorMetadataPage extends React.Component {
         secondary
         history={history}
         section="metadata"
+        pageErrors={pageErrors}
+        validatePage={this.validatePage}
       >
         {this.renderMetadataFields()}
       </OperatorEditorSubPage>

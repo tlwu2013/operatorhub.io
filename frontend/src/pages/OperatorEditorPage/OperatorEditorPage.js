@@ -43,9 +43,8 @@ class OperatorEditorPage extends React.Component {
   };
 
   doClearContents = () => {
-    const { storeEditorFormErrors, storeEditorOperator, hideConfirmModal } = this.props;
-    storeEditorFormErrors({});
-    storeEditorOperator({});
+    const { resetEditorOperator, hideConfirmModal } = this.props;
+    resetEditorOperator();
     this.setState({
       validCSV: false
     });
@@ -309,7 +308,7 @@ class OperatorEditorPage extends React.Component {
 OperatorEditorPage.propTypes = {
   operator: PropTypes.object,
   storeEditorOperator: PropTypes.func,
-  storeEditorFormErrors: PropTypes.func,
+  resetEditorOperator: PropTypes.func,
   showConfirmModal: PropTypes.func,
   hideConfirmModal: PropTypes.func,
   history: PropTypes.shape({
@@ -319,8 +318,8 @@ OperatorEditorPage.propTypes = {
 
 OperatorEditorPage.defaultProps = {
   operator: {},
-  storeEditorFormErrors: helpers.noop,
   storeEditorOperator: helpers.noop,
+  resetEditorOperator: helpers.noop,
   showConfirmModal: helpers.noop,
   hideConfirmModal: helpers.noop
 };
@@ -331,10 +330,9 @@ const mapDispatchToProps = dispatch => ({
       type: reduxConstants.SET_EDITOR_OPERATOR,
       operator
     }),
-  storeEditorFormErrors: formErrors =>
+  resetEditorOperator: () =>
     dispatch({
-      type: reduxConstants.SET_EDITOR_FORM_ERRORS,
-      formErrors
+      type: reduxConstants.RESET_EDITOR_OPERATOR
     }),
   showConfirmModal: onConfirm =>
     dispatch({

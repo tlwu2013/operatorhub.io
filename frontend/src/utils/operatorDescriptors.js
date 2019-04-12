@@ -1,5 +1,8 @@
 /* eslint-disable no-template-curly-in-string */
 import * as React from 'react';
+import * as _ from 'lodash-es';
+
+import { emailRegExp, urlRegExp } from './operatorUtils';
 
 const operatorFieldDescriptions = {
   metadata: {
@@ -228,6 +231,51 @@ const operatorFieldPlaceholders = {
   }
 };
 
+const linksValidator = links => {
+  if (!links || _.isEmpty(links)) {
+    return 'At least one external link is required.';
+  }
+  let errors = false;
+  const linkErrors = [];
+  _.forEach(links, link => {
+    if (!urlRegExp.test(link.url)) {
+      errors = true;
+      linkErrors.push({ key: '', value: 'Must be a valid URL' });
+    } else {
+      linkErrors.push('');
+    }
+  });
+
+  if (errors) {
+    return linkErrors;
+  }
+
+  return null;
+};
+
+const maintainersValidator = maintainers => {
+  if (!maintainers || _.isEmpty(maintainers)) {
+    return 'At least one maintainer is required.';
+  }
+
+  let errors = false;
+  const maintainerErrors = [];
+  _.forEach(maintainers, maintainer => {
+    if (!emailRegExp.test(maintainer.url)) {
+      errors = true;
+      maintainerErrors.push({ key: '', value: 'Must be a valid email address' });
+    } else {
+      maintainerErrors.push('');
+    }
+  });
+
+  if (errors) {
+    return maintainerErrors;
+  }
+
+  return null;
+};
+
 const operatorFieldValidators = {
   metadata: {
     name: {
@@ -254,14 +302,14 @@ const operatorFieldValidators = {
     },
     version: {
       required: true,
-      regex: /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/,
+      regex: /^([v|V])?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/,
       regexErrorMessage: 'Must be in semantic version format (e.g 0.0.1 or v0.0.1)'
     },
     maturity: {
       required: true
     },
     maintainers: {
-      required: true
+      validator: maintainersValidator
     },
     icon: {
       required: true
@@ -271,6 +319,9 @@ const operatorFieldValidators = {
     },
     customresourcedefinitions: {
       required: true
+    },
+    links: {
+      validator: linksValidator
     }
   }
 };

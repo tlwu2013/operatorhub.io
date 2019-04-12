@@ -17,8 +17,11 @@ class MarkdownEditor extends React.Component {
   }
 
   onMarkdownChange = value => {
-    console.log(value);
     this.props.onChange(value);
+  };
+
+  onMarkdownBlur = value => {
+    this.props.onValidate(value);
   };
 
   startResize = event => {
@@ -74,7 +77,12 @@ class MarkdownEditor extends React.Component {
             this.viewer = ref;
           }}
         >
-          <SimpleMdeWrapper markdown={markdown} options={mdeOptions} onChange={this.onMarkdownChange} />
+          <SimpleMdeWrapper
+            markdown={markdown}
+            options={mdeOptions}
+            onChange={this.onMarkdownChange}
+            onBlur={this.onMarkdownBlur}
+          />
         </div>
         <div className="oh-markdown-viewer__resizer" onMouseDown={this.startResize} />
       </div>
@@ -86,12 +94,14 @@ MarkdownEditor.propTypes = {
   title: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
   markdown: PropTypes.string,
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
+  onValidate: PropTypes.func
 };
 
 MarkdownEditor.defaultProps = {
   markdown: '',
-  onChange: helpers.noop
+  onChange: helpers.noop,
+  onValidate: helpers.noop
 };
 
 export default MarkdownEditor;

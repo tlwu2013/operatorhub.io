@@ -1,8 +1,15 @@
 import * as _ from 'lodash-es';
 import { reduxConstants } from './index';
+import { validCapabilityStrings } from '../utils/operatorUtils';
 
 const initialState = {
-  operator: {},
+  operator: {
+    metadata: {
+      annotations: {
+        capabilities: validCapabilityStrings[0]
+      }
+    }
+  },
   formErrors: {},
   sectionStatus: {
     metadata: 'empty',
@@ -23,6 +30,9 @@ const editorReducer = (state = initialState, action) => {
       sectionStatus = _.clone(state.sectionStatus);
       sectionStatus[action.section] = action.status;
       return Object.assign({}, state, { sectionStatus });
+
+    case reduxConstants.RESET_EDITOR_OPERATOR:
+      return Object.assign({}, state, initialState);
 
     case reduxConstants.SET_EDITOR_OPERATOR:
       return Object.assign({}, state, {
