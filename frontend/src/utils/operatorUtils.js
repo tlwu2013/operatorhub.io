@@ -1,6 +1,7 @@
 import * as _ from 'lodash-es';
 import { operatorFieldValidators } from './operatorDescriptors';
 import { helpers } from '../common/helpers';
+import { EDITOR_STATUS } from '../pages/OperatorEditorPage/editorPageUtils';
 
 const normalizeVersion = version => {
   let normVersion = version.replace(/-beta/gi, 'beta');
@@ -90,10 +91,15 @@ const getFieldValueError = (operator, field) => {
     }
   }
 
-  const validator = _.get(_.get(operatorFieldValidators, field), 'validator', helpers.noop);
+  const validator = _.get(_.get(operatorFieldValidators, field), 'validator');
   if (validator) {
     return validator(value);
   }
+
+  if (_.get(operatorFieldValidators, field, {}).required && _.isEmpty(value)) {
+    return 'This field is required';
+  }
+
   return null;
 };
 
@@ -119,6 +125,7 @@ const validateOperatorSubFields = (operator, fieldList) => {
 };
 
 const validateOperator = operator => {
+  console.log('validateOperator');
   if (_.isEmpty(operator)) {
     return false;
   }

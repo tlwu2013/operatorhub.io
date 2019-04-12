@@ -51,7 +51,7 @@ class App extends React.Component {
           <Route path="/editor/deployments/:deployment" component={OperatorDeploymentEditPage} />
           <Route path="/editor/deployments" component={OperatorDeploymentsPage} />
           <Route path="/editor/permissions" component={OperatorPermissionsPage} />
-          <Route path="/editor/clusterPermissions" component={OperatorClusterPermissionsPage} />
+          <Route path="/editor/cluster-permissions" component={OperatorClusterPermissionsPage} />
           <Route path="/editor/install-modes" component={OperatorInstallModesPage} />
           <Route path="/editor" component={OperatorEditorPage} />
           <Route path="/getting-started" component={GettingStarted} />

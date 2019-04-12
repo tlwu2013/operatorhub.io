@@ -2,11 +2,9 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import * as _ from 'lodash-es';
-import { safeLoad, safeDump } from 'js-yaml';
-import { Alert, EmptyState, Icon } from 'patternfly-react';
+import { Icon } from 'patternfly-react';
 import { helpers } from '../../common/helpers';
 import { reduxConstants } from '../../redux';
-import YamlEditor from '../../components/YamlViewer';
 import { validateOperator } from '../../utils/operatorUtils';
 import PreviewOperatorModal from '../../components/modals/PreviewOperatorModal';
 import EditorSection from '../../components/editor/EditorSection';
@@ -29,19 +27,6 @@ class OperatorEditorPage extends React.Component {
     });
   }
 
-  onYamlChange = yaml => {
-    let updatedOperator = {};
-    try {
-      updatedOperator = safeLoad(yaml) || {};
-    } catch (e) {
-      // Ignore errors until save
-    }
-
-    const validCSV = validateOperator(updatedOperator);
-    this.props.storeEditorOperator(updatedOperator);
-    this.setState({ operatorYaml: yaml, validCSV });
-  };
-
   generateCSV = () => {};
 
   hidePreviewOperator = () => {
@@ -58,13 +43,10 @@ class OperatorEditorPage extends React.Component {
   };
 
   doClearContents = () => {
-    const { storeEditorYaml, storeEditorFormErrors, storeEditorOperator, hideConfirmModal } = this.props;
-    storeEditorYaml('');
+    const { storeEditorFormErrors, storeEditorOperator, hideConfirmModal } = this.props;
     storeEditorFormErrors({});
     storeEditorOperator({});
     this.setState({
-      operatorYaml: '',
-      yamlError: '',
       validCSV: false
     });
     hideConfirmModal();
@@ -82,44 +64,6 @@ class OperatorEditorPage extends React.Component {
 
     this.setState({ validCSV });
     storeEditorOperator(operator);
-  };
-
-  toggleEditMode = () => {
-    const { operator, editMode, storeEditorOperator } = this.props;
-    const { operatorYaml } = this.state;
-
-    if (editMode === 'form') {
-      try {
-        const updatedOperatorYaml = !_.isEmpty(operator) ? safeDump(operator) : '';
-        this.setState({ operatorYaml: updatedOperatorYaml });
-        this.props.storeEditMode('yaml');
-      } catch (e) {
-        this.setState({ yamlError: e.message });
-      }
-      return;
-    }
-
-    try {
-      const updatedOperator = safeLoad(operatorYaml) || {};
-      storeEditorOperator(updatedOperator);
-      this.props.storeEditMode('form');
-    } catch (e) {
-      this.setState({ yamlError: e.message });
-    }
-  };
-
-  renderYamlEditor() {
-    const { operatorYaml, yamlError } = this.state;
-
-    return (
-      <div className="oh-preview-page-yaml">
-        <YamlEditor onChange={this.onYamlChange} editable yaml={operatorYaml} error={yamlError} />
-      </div>
-    );
-  }
-
-  setTitleAreaRef = ref => {
-    this.titleAreaRef = ref;
   };
 
   renderMetadataSection() {
@@ -243,7 +187,7 @@ class OperatorEditorPage extends React.Component {
         title="Cluster Permissions"
         description={_.get(operatorFieldDescriptions, 'spec.install.spec.clusterPermissions')}
         history={history}
-        sectionLocation="clusterPermissions"
+        sectionLocation="cluster-permissions"
       />
     );
   };
@@ -311,32 +255,6 @@ class OperatorEditorPage extends React.Component {
     );
   }
 
-  renderError() {
-    const { yamlError } = this.state;
-
-    return (
-      <div id="yaml-editor-error">
-        {yamlError && (
-          <EmptyState className="blank-slate-content-pf">
-            <Alert type="error">
-              <span>{`Error parsing YAML: ${yamlError}`}</span>
-            </Alert>
-          </EmptyState>
-        )}
-      </div>
-    );
-  }
-
-  renderOperatorForm() {
-    return (
-      <form className="oh-operator-editor-form">
-        {this.renderGeneralInfo()}
-        {this.renderCustomResourceDefinitions()}
-        {this.renderOperatorInstallation()}
-      </form>
-    );
-  }
-
   renderHeader = () => (
     <React.Fragment>
       <div className="oh-operator-editor-page__header">
@@ -351,13 +269,13 @@ class OperatorEditorPage extends React.Component {
   );
 
   renderButtonBar() {
-    const { operatorYaml, validCSV } = this.state;
+    const { operator, validCSV } = this.state;
     return (
       <div className="oh-operator-editor-page__button-bar">
         <div>
           <button
-            className={`oh-operator-editor-toolbar__button ${operatorYaml ? '' : 'disabled'}`}
-            disabled={!operatorYaml}
+            className={`oh-operator-editor-toolbar__button ${_.isEmpty(operator) ? 'disabled' : ''}`}
+            disabled={!_.isEmpty(operator)}
             onClick={this.clearContents}
           >
             Clear Content
@@ -384,20 +302,15 @@ class OperatorEditorPage extends React.Component {
   }
 
   render() {
-    const { operator, editMode, history } = this.props;
+    const { operator, history } = this.props;
     const { previewShown } = this.state;
 
     return (
       <OperatorEditorSubPage title="Operator Editor" header={this.renderHeader()} history={history}>
         {this.renderManifests()}
-        {editMode === 'form' && (
-          <React.Fragment>
-            {this.renderGeneralInfo()}
-            {this.renderCustomResourceDefinitions()}
-            {this.renderOperatorInstallation()}
-          </React.Fragment>
-        )}
-        {editMode === 'yaml' && this.renderYamlEditor()}
+        {this.renderGeneralInfo()}
+        {this.renderCustomResourceDefinitions()}
+        {this.renderOperatorInstallation()}
         {this.renderButtonBar()}
         <PreviewOperatorModal show={previewShown} yamlOperator={operator} onClose={this.hidePreviewOperator} />
       </OperatorEditorSubPage>
@@ -407,10 +320,7 @@ class OperatorEditorPage extends React.Component {
 
 OperatorEditorPage.propTypes = {
   operator: PropTypes.object,
-  editMode: PropTypes.string,
-  storeEditMode: PropTypes.func,
   storeEditorOperator: PropTypes.func,
-  storeEditorYaml: PropTypes.func,
   storeEditorFormErrors: PropTypes.func,
   showConfirmModal: PropTypes.func,
   hideConfirmModal: PropTypes.func,
@@ -422,28 +332,14 @@ OperatorEditorPage.propTypes = {
 
 OperatorEditorPage.defaultProps = {
   operator: {},
-  editMode: 'form',
-  storeEditMode: helpers.noop,
   storeEditorFormErrors: helpers.noop,
   storeEditorOperator: helpers.noop,
-  storeEditorYaml: helpers.noop,
   showConfirmModal: helpers.noop,
   hideConfirmModal: helpers.noop,
   storeKeywordSearch: helpers.noop
 };
 
 const mapDispatchToProps = dispatch => ({
-  storeEditMode: mode =>
-    dispatch({
-      type: reduxConstants.SET_EDITOR_MODE,
-      mode
-    }),
-  storeEditorYaml: (yaml, yamlChanged = true) =>
-    dispatch({
-      type: reduxConstants.SET_EDITOR_YAML,
-      yaml,
-      yamlChanged
-    }),
   storeEditorOperator: operator =>
     dispatch({
       type: reduxConstants.SET_EDITOR_OPERATOR,
@@ -475,9 +371,7 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-  operator: state.editorState.operator,
-  formErrors: state.editorState.formErrors,
-  editMode: state.editorState.mode
+  operator: state.editorState.operator
 });
 
 export default connect(

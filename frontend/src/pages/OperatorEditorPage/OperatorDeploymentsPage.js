@@ -24,7 +24,13 @@ const OperatorDeploymentsPage = ({ operator, formErrors, storeEditorOperator, st
   };
 
   return (
-    <OperatorEditorSubPage title="Deployments" field="spec.install.spec.deployments" secondary history={history}>
+    <OperatorEditorSubPage
+      title="Deployments"
+      field="spec.install.spec.deployments"
+      secondary
+      history={history}
+      section="deployments"
+    >
       <ListObjectEditor
         operator={operator}
         title="Deployments"

@@ -18,6 +18,7 @@ const OperatorClusterPermissionsPage = ({
     field="spec.install.spec.clusterPermissions"
     secondary
     history={history}
+    section="cluster-permissions"
   >
     TBD
   </OperatorEditorSubPage>

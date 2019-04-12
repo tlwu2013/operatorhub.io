@@ -1,102 +1,73 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import * as _ from 'lodash-es';
 import { Icon } from 'patternfly-react';
-import { getFieldMissing, getFieldValueError } from '../../utils/operatorUtils';
+import { EDITOR_STATUS } from '../../pages/OperatorEditorPage/editorPageUtils';
 
-class EditorSection extends React.Component {
-  state = {
-    started: false,
-    completed: false,
-    invalid: false
-  };
+const EditorSection = ({ sectionStatus, title, description, sectionLocation, history }) => {
+  const status = _.get(sectionStatus, sectionLocation);
 
-  componentDidUpdate(prevProps) {
-    const { operator } = this.props;
-
-    if (!_.isEqual(operator, prevProps.operator)) {
-      this.validateFields();
-    }
-  }
-
-  toggleOpenState = event => {
-    event.preventDefault();
-    this.setState({ open: !this.state.open });
-  };
-
-  validateFields = () => {
-    const { fields, operator } = this.props;
-    const completed = _.every(fields, field => !getFieldMissing(operator, field));
-    const started = _.some(fields, field => _.get(operator, field, '') !== '');
-    const invalid = _.some(fields, field => getFieldValueError(operator, field));
-
-    this.setState({ started, completed, invalid });
-  };
-
-  onEdit = () => {
-    const { history, sectionLocation } = this.props;
+  const onEdit = () => {
     history.push(`/editor/${sectionLocation}`);
   };
 
-  renderSectionStatus() {
-    const { completed, invalid } = this.state;
+  const renderSectionStatus = () => {
 
-    if (invalid) {
+    if (status === EDITOR_STATUS.errors) {
       return (
         <React.Fragment>
-          <Icon type="fa" name="error-circle" />
+          <Icon type="fa" name="minus-circle" />
           Invalid Entries
         </React.Fragment>
       );
     }
-    if (completed) {
+    if (status === EDITOR_STATUS.complete) {
       return (
         <React.Fragment>
           <Icon type="fa" name="check-circle" />
-          Complete
+          Completed
         </React.Fragment>
       );
     }
-    return (
-      <React.Fragment>
-        <Icon type="fa" name="warning" />
-        Incomplete
-      </React.Fragment>
-    );
-  }
+    if (status === EDITOR_STATUS.pending) {
+      return (
+        <React.Fragment>
+          <Icon type="fa" name="warning" />
+          Pending Review
+        </React.Fragment>
+      );
+    }
 
-  render() {
-    const { title, description } = this.props;
-    const { started } = this.state;
+    return null;
+  };
 
-    return (
-      <div className="oh-operator-editor-page__section">
-        <div className="oh-operator-editor-page__section__header">
-          <div className="oh-operator-editor-page__section__header__text">
-            <h3>{title || ''}</h3>
-            {description && <p>{description}</p>}
-          </div>
-          <div className="oh-operator-editor-page__section__status">
-            {this.renderSectionStatus()}
-            {started ? (
-              <button className="oh-operator-editor-page__section__edit-button" onClick={this.onEdit}>
-                Edit
-              </button>
-            ) : (
-              <button className="oh-operator-editor-page__section__edit-button primary" onClick={this.onEdit}>
-                Start
-              </button>
-            )}
-          </div>
+  return (
+    <div className="oh-operator-editor-page__section">
+      <div className="oh-operator-editor-page__section__header">
+        <div className="oh-operator-editor-page__section__header__text">
+          <h3>{title || ''}</h3>
+          {description && <p>{description}</p>}
+        </div>
+        <div className="oh-operator-editor-page__section__status">
+          {renderSectionStatus()}
+          {!status || status === EDITOR_STATUS.empty ? (
+            <button className="oh-operator-editor-page__section__edit-button primary" onClick={onEdit}>
+              Start
+            </button>
+          ) : (
+            <button className="oh-operator-editor-page__section__edit-button" onClick={onEdit}>
+              Edit
+            </button>
+          )}
         </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 EditorSection.propTypes = {
-  operator: PropTypes.object.isRequired,
-  fields: PropTypes.array.isRequired,
+  sectionStatus: PropTypes.object,
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
   description: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
   sectionLocation: PropTypes.string.isRequired,
@@ -105,4 +76,12 @@ EditorSection.propTypes = {
   }).isRequired
 };
 
-export default EditorSection;
+EditorSection.defaultProps = {
+  sectionStatus: {}
+};
+
+const mapStateToProps = state => ({
+  sectionStatus: state.editorState.sectionStatus
+});
+
+export default connect(mapStateToProps)(EditorSection);

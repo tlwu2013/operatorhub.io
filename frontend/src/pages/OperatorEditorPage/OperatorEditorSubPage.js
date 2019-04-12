@@ -1,5 +1,6 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import { connect } from 'react-redux';
 import * as _ from 'lodash-es';
 import { Breadcrumb } from 'patternfly-react';
@@ -8,6 +9,7 @@ import { helpers } from '../../common/helpers';
 import Page from '../../components/page/Page';
 import { reduxConstants } from '../../redux';
 import { operatorFieldDescriptions } from '../../utils/operatorDescriptors';
+import { EDITOR_STATUS } from './editorPageUtils';
 
 class OperatorEditorSubPage extends React.Component {
   state = {
@@ -41,11 +43,15 @@ class OperatorEditorSubPage extends React.Component {
   };
 
   allSet = e => {
-    const { secondary } = this.props;
+    const { setSectionAllSet, section, secondary } = this.props;
+
+    setSectionAllSet(section);
+
     if (secondary) {
       this.onEditor(e);
       return;
     }
+
     this.onBack(e);
   };
 
@@ -99,8 +105,12 @@ class OperatorEditorSubPage extends React.Component {
   );
 
   renderButtonBar() {
-    const { secondary, tertiary } = this.props;
+    const { secondary, tertiary, section, sectionStatus } = this.props;
+
     if (secondary) {
+      const sectionError = sectionStatus[section] === EDITOR_STATUS.errors;
+      const allSetClasses = classNames('oh-operator-editor-toolbar__button primary', { disabled: sectionError });
+
       return (
         <div className="oh-operator-editor-page__button-bar">
           <div>
@@ -109,13 +119,14 @@ class OperatorEditorSubPage extends React.Component {
             </button>
           </div>
           <div>
-            <button className="oh-operator-editor-toolbar__button primary" onClick={e => this.allSet(e)}>
+            <button className={allSetClasses} disabled={sectionError} onClick={e => this.allSet(e)}>
               {`All set with ${this.props.title}`}
             </button>
           </div>
         </div>
       );
     }
+
     if (tertiary) {
       return (
         <div className="oh-operator-editor-page__button-bar">
@@ -128,6 +139,7 @@ class OperatorEditorSubPage extends React.Component {
         </div>
       );
     }
+
     return null;
   }
 
@@ -178,10 +190,13 @@ OperatorEditorSubPage.propTypes = {
   tertiary: PropTypes.bool,
   lastPage: PropTypes.string,
   lastPageTitle: PropTypes.string,
+  section: PropTypes.string,
   children: PropTypes.node,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired
   }).isRequired,
+  sectionStatus: PropTypes.object,
+  setSectionAllSet: PropTypes.func,
   storeKeywordSearch: PropTypes.func
 };
 
@@ -194,7 +209,10 @@ OperatorEditorSubPage.defaultProps = {
   tertiary: false,
   lastPage: '',
   lastPageTitle: '',
+  section: '',
   children: null,
+  sectionStatus: {},
+  setSectionAllSet: helpers.noop,
   storeKeywordSearch: helpers.noop
 };
 
@@ -203,10 +221,18 @@ const mapDispatchToProps = dispatch => ({
     dispatch({
       type: reduxConstants.SET_KEYWORD_SEARCH,
       keywordSearch
+    }),
+  setSectionAllSet: section =>
+    dispatch({
+      type: reduxConstants.SET_EDITOR_SECTION_STATUS,
+      section,
+      status: EDITOR_STATUS.complete
     })
 });
 
-const mapStateToProps = () => ({});
+const mapStateToProps = state => ({
+  sectionStatus: state.editorState.sectionStatus
+});
 
 export default connect(
   mapStateToProps,

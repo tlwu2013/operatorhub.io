@@ -32,7 +32,7 @@ const OperatorCRDsPage = ({ operator, crdsField, crdsTitle, crdsDescription, obj
   );
 
   return (
-    <OperatorEditorSubPage title={crdsTitle} description={description} secondary history={history}>
+    <OperatorEditorSubPage title={crdsTitle} description={description} secondary history={history} section={objectPage}>
       <ListObjectEditor
         operator={operator}
         title={crdsTitle}

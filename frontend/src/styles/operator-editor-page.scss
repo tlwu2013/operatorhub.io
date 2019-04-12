@@ -101,6 +101,9 @@
     &__status {
       .fa, .pficon {
         margin-right: 4px;
+        &.fa-minus-circle {
+          color: $color-pf-red;
+        }
       }
       .oh-operator-editor-toolbar__button {
         margin-left: 10px;

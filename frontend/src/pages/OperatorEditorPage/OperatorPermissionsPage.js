@@ -7,7 +7,13 @@ import { reduxConstants } from '../../redux';
 import OperatorEditorSubPage from './OperatorEditorSubPage';
 
 const OperatorPermissionsPage = ({ operator, formErrors, storeEditorOperator, storeEditorFormErrors, history }) => (
-  <OperatorEditorSubPage title="Permissions" field="spec.install.spec.permissions" secondary history={history}>
+  <OperatorEditorSubPage
+    title="Permissions"
+    field="spec.install.spec.permissions"
+    secondary
+    history={history}
+    section="permissions"
+  >
     TBD
   </OperatorEditorSubPage>
 );

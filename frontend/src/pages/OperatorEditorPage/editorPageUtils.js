@@ -8,6 +8,14 @@ import {
   operatorFieldPlaceholders,
   operatorFieldValidators
 } from '../../utils/operatorDescriptors';
+import { getFieldValueError } from '../../utils/operatorUtils';
+
+const EDITOR_STATUS = {
+  empty: 'empty',
+  pending: 'pending',
+  complete: 'complete',
+  errors: 'errors'
+};
 
 const renderFormError = (field, formErrors) => {
   const error = _.get(formErrors, field);
@@ -220,4 +228,22 @@ const renderObjectFormField = (
   );
 };
 
-export { renderOperatorFormField, renderObjectFormField };
+const updateStoredOperator = (operator, value, field, storeEditorOperator) => {
+  const updatedOperator = _.cloneDeep(operator);
+  _.set(updatedOperator, field, value);
+  storeEditorOperator(updatedOperator);
+};
+
+const updateStoredFormErrors = (operator, formErrors, fields, storeEditorFormErrors, sectionStatus) => {
+  const fieldsArray = _.castArray(fields);
+  const updatedFormErrors = _.clone(formErrors);
+  _.forEach(fieldsArray, field => {
+    const error = getFieldValueError(operator, field, sectionStatus);
+    _.set(updatedFormErrors, field, error);
+  });
+  storeEditorFormErrors(updatedFormErrors);
+
+  return updatedFormErrors;
+};
+
+export { renderOperatorFormField, renderObjectFormField, EDITOR_STATUS, updateStoredOperator, updateStoredFormErrors };
