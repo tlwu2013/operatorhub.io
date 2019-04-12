@@ -10,7 +10,18 @@ import ListObjectEditor from '../../components/editor/ListObjectEditor';
 import { getFieldValueError } from '../../utils/operatorUtils';
 import { operatorObjectDescriptions } from '../../utils/operatorDescriptors';
 
-const OperatorCRDsPage = ({ operator, crdsField, crdsTitle, crdsDescription, objectPage, objectType, formErrors, storeEditorOperator, storeEditorFormErrors, history }) => {
+const OperatorCRDsPage = ({
+  operator,
+  crdsField,
+  crdsTitle,
+  crdsDescription,
+  objectPage,
+  objectType,
+  formErrors,
+  storeEditorOperator,
+  storeEditorFormErrors,
+  history
+}) => {
   const validateField = field => {
     const error = getFieldValueError(operator, field);
     _.set(formErrors, field, error);

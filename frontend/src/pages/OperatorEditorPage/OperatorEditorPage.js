@@ -109,11 +109,9 @@ class OperatorEditorPage extends React.Component {
 
   renderOwnedCRDs = () => {
     const { operator, history } = this.props;
-    const fields = [];
     return (
       <EditorSection
         operator={operator}
-        fields={fields}
         title="Owned CRDs"
         description={_.get(operatorObjectDescriptions, 'spec.customresourcedefinitions.owned.description')}
         history={history}
@@ -124,11 +122,9 @@ class OperatorEditorPage extends React.Component {
 
   renderRequiredCRDs = () => {
     const { operator, history } = this.props;
-    const fields = [];
     return (
       <EditorSection
         operator={operator}
-        fields={fields}
         title="Required CRDs (Optional)"
         description={_.get(operatorObjectDescriptions, 'spec.customresourcedefinitions.required.description')}
         history={history}
@@ -149,11 +145,9 @@ class OperatorEditorPage extends React.Component {
 
   renderDeployments = () => {
     const { operator, history } = this.props;
-    const fields = [];
     return (
       <EditorSection
         operator={operator}
-        fields={fields}
         title="Deployments"
         description={_.get(operatorFieldDescriptions, 'spec.install.spec.deployments')}
         history={history}
@@ -164,11 +158,9 @@ class OperatorEditorPage extends React.Component {
 
   renderPermissions = () => {
     const { operator, history } = this.props;
-    const fields = [];
     return (
       <EditorSection
         operator={operator}
-        fields={fields}
         title="Permissions"
         description={_.get(operatorFieldDescriptions, 'spec.install.spec.permissions')}
         history={history}
@@ -179,11 +171,9 @@ class OperatorEditorPage extends React.Component {
 
   renderClusterPermissions = () => {
     const { operator, history } = this.props;
-    const fields = [];
     return (
       <EditorSection
         operator={operator}
-        fields={fields}
         title="Cluster Permissions"
         description={_.get(operatorFieldDescriptions, 'spec.install.spec.clusterPermissions')}
         history={history}
@@ -194,11 +184,9 @@ class OperatorEditorPage extends React.Component {
 
   renderInstallModes = () => {
     const { operator, history } = this.props;
-    const fields = [];
     return (
       <EditorSection
         operator={operator}
-        fields={fields}
         title="Install Modes"
         description={operatorFieldDescriptions.spec.installModes}
         history={history}
@@ -326,8 +314,7 @@ OperatorEditorPage.propTypes = {
   hideConfirmModal: PropTypes.func,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired
-  }).isRequired,
-  storeKeywordSearch: PropTypes.func
+  }).isRequired
 };
 
 OperatorEditorPage.defaultProps = {
@@ -335,8 +322,7 @@ OperatorEditorPage.defaultProps = {
   storeEditorFormErrors: helpers.noop,
   storeEditorOperator: helpers.noop,
   showConfirmModal: helpers.noop,
-  hideConfirmModal: helpers.noop,
-  storeKeywordSearch: helpers.noop
+  hideConfirmModal: helpers.noop
 };
 
 const mapDispatchToProps = dispatch => ({

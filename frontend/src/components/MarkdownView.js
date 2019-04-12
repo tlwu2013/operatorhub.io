@@ -3,16 +3,13 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { helpers } from '../common/helpers';
 
-export const MarkdownView = ({ className, markdown, ...props }) => {
-
-  return (
-    <div
-      className={classNames('oh-markdown-view', className)}
-      {...props}
-      dangerouslySetInnerHTML={{ __html: helpers.markdownConverter.makeHtml(markdown) }}
-    />
-  );
-};
+export const MarkdownView = ({ className, markdown, ...props }) => (
+  <div
+    className={classNames('oh-markdown-view', className)}
+    {...props}
+    dangerouslySetInnerHTML={{ __html: helpers.markdownConverter.makeHtml(markdown) }}
+  />
+);
 
 MarkdownView.propTypes = {
   className: PropTypes.string,

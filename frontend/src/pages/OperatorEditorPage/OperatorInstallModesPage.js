@@ -24,7 +24,13 @@ const OperatorInstallModesPage = ({ operator, formErrors, storeEditorOperator, s
   };
 
   return (
-    <OperatorEditorSubPage title="Install Modes" field="pec.installModes" secondary history={history} section="install-modes">
+    <OperatorEditorSubPage
+      title="Install Modes"
+      field="pec.installModes"
+      secondary
+      history={history}
+      section="install-modes"
+    >
       <InstallModeEditor operator={operator} onUpdate={updateInstallModes} />
     </OperatorEditorSubPage>
   );

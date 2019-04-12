@@ -2,7 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import * as _ from 'lodash-es';
 import { Icon } from 'patternfly-react';
-import helpers from '../../common/helpers';
+import { helpers } from '../../common/helpers';
 
 class ListObjectEditor extends React.Component {
   constructor(props) {
@@ -56,7 +56,10 @@ class ListObjectEditor extends React.Component {
       <div key={index} className="oh-operator-editor__list__item">
         <h3>{_.get(operatorObject, objectTitleField)}</h3>
         <div className="oh-operator-editor__list__item__actions">
-          <button className="oh-operator-editor-page__section__edit-button" onClick={() => this.editOperatorObject(operatorObject)}>
+          <button
+            className="oh-operator-editor-page__section__edit-button"
+            onClick={() => this.editOperatorObject(operatorObject)}
+          >
             Edit
           </button>
           <a href="#" onClick={e => this.removeOperatorObject(e, operatorObject)}>

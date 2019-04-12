@@ -1,6 +1,5 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import * as _ from 'lodash-es';
 import classNames from 'classnames';
 import { Alert, Grid, Icon } from 'patternfly-react';
 import { operatorFieldDescriptions } from '../../utils/operatorDescriptors';
@@ -11,7 +10,6 @@ class ImageEditor extends React.Component {
     super(props);
 
     this.state = {
-      image: _.get(props.operator, 'spec.icon', [])[0] || '',
       advancedUpload: true,
       dragOver: false,
       uploadError: null
@@ -22,14 +20,9 @@ class ImageEditor extends React.Component {
     this.setState({ advancedUpload: helpers.advancedUploadAvailable() });
   }
 
-  componentDidUpdate(prevProps) {
-    const { operator } = this.props;
-    if (operator !== prevProps.operator) {
-      this.setState({ image: _.get(operator, 'spec.icon', [])[0] });
-    }
-  }
-
   doUploadFile = files => {
+    const { onUpdate } = this.props;
+
     const fileToUpload = files && files[0];
 
     if (!fileToUpload) {
@@ -41,7 +34,7 @@ class ImageEditor extends React.Component {
     reader.onload = () => {
       const base64data = reader.result.split('base64,')[1];
       const image = { base64data, mediatype: fileToUpload.type };
-      this.setState({ image, uploadError: null });
+      onUpdate([image]);
     };
 
     reader.onerror = () => {
@@ -54,7 +47,8 @@ class ImageEditor extends React.Component {
         </React.Fragment>
       );
 
-      this.setState({ uploadError: error, image: '' });
+      this.setState({ uploadError: error });
+      onUpdate();
       reader.abort();
     };
 
@@ -67,7 +61,7 @@ class ImageEditor extends React.Component {
       reader.readAsDataURL(fileToUpload);
     } else {
       const error = 'Unable to upload file: Only files of type svg, jpeg, png, or gif are supported';
-      this.setState({ uploadError: error, image: '' });
+      this.setState({ uploadError: error });
     }
   };
 
@@ -78,8 +72,9 @@ class ImageEditor extends React.Component {
   };
 
   clearImage = event => {
+    const { onUpdate } = this.props;
     event.preventDefault();
-    this.setState({ image: null, uploadError: null });
+    onUpdate();
   };
 
   clearError = event => {
@@ -88,7 +83,8 @@ class ImageEditor extends React.Component {
   };
 
   render() {
-    const { image, uploadError, advancedUpload, dragOver } = this.state;
+    const { icon } = this.props;
+    const { uploadError, advancedUpload, dragOver } = this.state;
 
     const uploadFileClasses = classNames({
       'oh-file-upload_empty-state': true,
@@ -96,14 +92,14 @@ class ImageEditor extends React.Component {
       'drag-over': dragOver
     });
 
-    const imgUrl = image ? `data:${image.mediatype};base64,${image.base64data}` : '';
+    const imgUrl = icon ? `data:${icon.mediatype};base64,${icon.base64data}` : '';
 
     return (
       <React.Fragment>
         <h3>Icon</h3>
         <div className="oh-operator-editor-form__field-section">
           <Grid.Row className="oh-operator-editor-form__field">
-            {!image && (
+            {!icon && (
               <Grid.Col sm={6}>
                 <div className="oh-file-upload__form">
                   <div
@@ -154,7 +150,7 @@ class ImageEditor extends React.Component {
                 </div>
               </Grid.Col>
             )}
-            {image && (
+            {icon && (
               <React.Fragment>
                 <Grid.Col sm={6}>
                   <div className="oh-operator-editor-form__operator-image-container">
@@ -194,8 +190,12 @@ class ImageEditor extends React.Component {
 }
 
 ImageEditor.propTypes = {
-  operator: PropTypes.object.isRequired,
+  icon: PropTypes.object,
   onUpdate: PropTypes.func.isRequired
+};
+
+ImageEditor.defaultProps = {
+  icon: null
 };
 
 export default ImageEditor;

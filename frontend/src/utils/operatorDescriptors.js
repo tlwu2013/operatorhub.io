@@ -19,9 +19,8 @@ const operatorFieldDescriptions = {
           <br />
           <br />
           The annotation consists of a list of the <code>kind</code>, e.g. the CRD name, and the corresponding{' '}
-          <code>metadata</code> and{' '}
-          <code>spec</code> of the Kubernetes object. If you uploaded your CRD templates with other operator manifests,
-          CRD templates will be populated into the coresponding CRD fields.
+          <code>metadata</code> and <code>spec</code> of the Kubernetes object. If you uploaded your CRD templates with
+          other operator manifests, CRD templates will be populated into the corresponding CRD fields.
         </span>
       )
     }

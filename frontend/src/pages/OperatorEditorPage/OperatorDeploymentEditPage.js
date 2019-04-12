@@ -2,13 +2,11 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import * as _ from 'lodash-es';
+import { safeDump, safeLoad } from 'js-yaml';
 
 import { helpers } from '../../common/helpers';
 import { reduxConstants } from '../../redux';
-import { getFieldValueError } from '../../utils/operatorUtils';
-import DeploymentsEditor from '../../components/editor/DeploymentsEditor';
 import OperatorEditorSubPage from './OperatorEditorSubPage';
-import { safeDump, safeLoad } from 'js-yaml';
 import YamlEditor from '../../components/YamlViewer';
 
 class OperatorDeploymentEditPage extends React.Component {
@@ -89,17 +87,11 @@ class OperatorDeploymentEditPage extends React.Component {
         field="spec.install.spec.deployments"
         tertiary
         lastPage="deployments"
-        lastPageTitle="Deploments"
+        lastPageTitle="Deployments"
         history={history}
       >
         <div className="oh-operator-editor-deployment">
-          <YamlEditor
-            yaml={deploymentYaml}
-            onBlur={this.onYamlChange}
-            editable
-            error={yamlError}
-            allowClear
-          />
+          <YamlEditor yaml={deploymentYaml} onBlur={this.onYamlChange} editable error={yamlError} allowClear />
         </div>
       </OperatorEditorSubPage>
     );
@@ -108,9 +100,7 @@ class OperatorDeploymentEditPage extends React.Component {
 
 OperatorDeploymentEditPage.propTypes = {
   operator: PropTypes.object,
-  formErrors: PropTypes.object,
   storeEditorOperator: PropTypes.func,
-  storeEditorFormErrors: PropTypes.func,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired
   }).isRequired,
@@ -119,8 +109,6 @@ OperatorDeploymentEditPage.propTypes = {
 
 OperatorDeploymentEditPage.defaultProps = {
   operator: {},
-  formErrors: {},
-  storeEditorFormErrors: helpers.noop,
   storeEditorOperator: helpers.noop
 };
 

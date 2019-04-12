@@ -13,7 +13,6 @@ const EditorSection = ({ sectionStatus, title, description, sectionLocation, his
   };
 
   const renderSectionStatus = () => {
-
     if (status === EDITOR_STATUS.errors) {
       return (
         <React.Fragment>

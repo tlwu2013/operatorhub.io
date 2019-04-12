@@ -8,8 +8,6 @@ import { Grid, Icon } from 'patternfly-react';
 import { helpers } from '../../common/helpers';
 import UploadUrlModal from '../modals/UploadUrlModal';
 import { reduxConstants } from '../../redux';
-import { validateOperator } from '../../utils/operatorUtils';
-import { operatorFieldValidators } from '../../utils/operatorDescriptors';
 
 const validFileTypes = ['.yaml'];
 
@@ -24,14 +22,7 @@ class ManifestUploader extends React.Component {
     this.setState({ advancedUpload: helpers.advancedUploadAvailable() });
   }
 
-  validateUpload = operator => {
-    const emptyOperator = _.cloneDeep(operatorFieldValidators);
-    const newFields = _.pickBy(operator, (value, key) => {
-      return true;
-    });
-
-    return true;
-  };
+  validateUpload = () => true;
 
   applyUpload = upload => {
     const { operator, onUpdate } = this.props;

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
+import * as _ from 'lodash-es';
 
 import { operatorFieldDescriptions } from '../../utils/operatorDescriptors';
 import MarkdownEditor from './MarkdownEditor';

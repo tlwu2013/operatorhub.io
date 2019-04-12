@@ -1,7 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import * as _ from 'lodash-es';
-import { installModeDescriptors, operatorFieldDescriptions } from '../../utils/operatorDescriptors';
+import { installModeDescriptors } from '../../utils/operatorDescriptors';
 
 const InstallModeEditor = ({ operator, onUpdate }) => {
   const updateInstallModes = (value, modeType, installModes) => {

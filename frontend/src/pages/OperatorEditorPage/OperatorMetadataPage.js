@@ -74,11 +74,6 @@ class OperatorMetadataPage extends React.Component {
     this.originalOperator = null;
   }
 
-  operatorUpdated = () => {
-    const { operator, storeEditorOperator } = this.props;
-    storeEditorOperator(operator);
-  };
-
   updateOperator = (value, field) => {
     const { workingOperator } = this.state;
     _.set(workingOperator, field, value);
@@ -88,7 +83,6 @@ class OperatorMetadataPage extends React.Component {
   validateField = field => {
     const { storeEditorOperator, formErrors, storeEditorFormErrors, setSectionStatus } = this.props;
     const { workingOperator } = this.state;
-
 
     const errors = updateStoredFormErrors(workingOperator, formErrors, field, storeEditorFormErrors);
     const metadataErrors = _.some(METADATA_FIELDS, metadataField => _.get(errors, metadataField));
@@ -100,6 +94,11 @@ class OperatorMetadataPage extends React.Component {
     } else {
       setSectionStatus(EDITOR_STATUS.pending);
     }
+  };
+
+  updateOperatorImage = icon => {
+    this.updateOperator(icon, 'spec.icon');
+    this.validateField('spec.icon');
   };
 
   updateOperatorCapability = capability => {
@@ -206,7 +205,7 @@ class OperatorMetadataPage extends React.Component {
         {this.renderFormField('Categories', 'metadata.annotations.categories', 'multi-select', categoryOptions)}
         {this.renderFormField('Keywords', 'spec.keywords', 'text')}
         <h3>Image Assets</h3>
-        <ImageEditor onUpdate={this.operatorUpdated} operator={workingOperator} />
+        <ImageEditor onUpdate={this.updateOperatorImage} icon={_.get(workingOperator, 'spec.icon', [])[0]} />
         <LabelsEditor
           operator={workingOperator}
           onUpdate={this.updateOperatorExternalLinks}

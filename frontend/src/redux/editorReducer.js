@@ -25,7 +25,6 @@ const editorReducer = (state = initialState, action) => {
       return Object.assign({}, state, { sectionStatus });
 
     case reduxConstants.SET_EDITOR_OPERATOR:
-      console.log(`Saved: ${_.get(action.operator, 'spec.displayName')}`);
       return Object.assign({}, state, {
         operator: action.operator
       });
