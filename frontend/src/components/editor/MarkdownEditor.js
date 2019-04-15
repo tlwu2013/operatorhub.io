@@ -12,10 +12,6 @@ class MarkdownEditor extends React.Component {
     initialPos: 0
   };
 
-  componentDidMount() {
-    this.viewer.onresize = e => console.dir(e);
-  }
-
   onMarkdownChange = value => {
     this.props.onChange(value);
   };

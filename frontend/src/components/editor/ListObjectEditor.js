@@ -32,8 +32,8 @@ class ListObjectEditor extends React.Component {
   };
 
   editOperatorObject = operatorObject => {
-    const { history, objectPage } = this.props;
-    const transformedName = helpers.transformNameForPath(operatorObject.name);
+    const { history, objectPage, pagePathField } = this.props;
+    const transformedName = helpers.transformNameForPath(_.get(operatorObject, pagePathField));
     history.push(`/editor/${objectPage}/${transformedName}`);
   };
 
@@ -104,6 +104,7 @@ ListObjectEditor.propTypes = {
   objectType: PropTypes.string.isRequired,
   fieldTitle: PropTypes.string.isRequired,
   objectTitleField: PropTypes.string.isRequired,
+  pagePathField: PropTypes.string,
   onUpdate: PropTypes.func.isRequired,
   objectPage: PropTypes.string.isRequired,
   history: PropTypes.shape({
@@ -112,7 +113,8 @@ ListObjectEditor.propTypes = {
 };
 
 ListObjectEditor.defaultProps = {
-  operator: {}
+  operator: {},
+  pagePathField: 'name'
 };
 
 export default ListObjectEditor;

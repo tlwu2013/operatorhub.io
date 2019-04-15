@@ -25,6 +25,8 @@ import OperatorClusterPermissionsPage from './pages/OperatorEditorPage/OperatorC
 import OperatorOwnedCRDEditPage from './pages/OperatorEditorPage/OperatorOwnedCRDEditPage';
 import OperatorDeploymentEditPage from './pages/OperatorEditorPage/OperatorDeploymentEditPage';
 import OperatorRequiredCRDEditPage from './pages/OperatorEditorPage/OperatorRequiredCRDEditPage';
+import OperatorPermissionsEditPage from './pages/OperatorEditorPage/OperatorPermissionsEditPage';
+import OperatorClusterPermissionsEditPage from './pages/OperatorEditorPage/OperatorClusterPermissionsEditPage';
 
 class App extends React.Component {
   constructor(props) {
@@ -50,7 +52,9 @@ class App extends React.Component {
           <Route path="/editor/required-crds" component={OperatorRequiredCRDsPage} />
           <Route path="/editor/deployments/:deployment" component={OperatorDeploymentEditPage} />
           <Route path="/editor/deployments" component={OperatorDeploymentsPage} />
+          <Route path="/editor/permissions/:serviceAccountName" component={OperatorPermissionsEditPage} />
           <Route path="/editor/permissions" component={OperatorPermissionsPage} />
+          <Route path="/editor/cluster-permissions/:serviceAccountName" component={OperatorClusterPermissionsEditPage} />
           <Route path="/editor/cluster-permissions" component={OperatorClusterPermissionsPage} />
           <Route path="/editor/install-modes" component={OperatorInstallModesPage} />
           <Route path="/editor" component={OperatorEditorPage} />

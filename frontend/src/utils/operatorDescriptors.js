@@ -68,20 +68,12 @@ const operatorFieldDescriptions = {
     install: {
       spec: {
         deployments: 'Describe the deployment that will be started within the desired namespace',
-        permissions: (
-          <span>
-            Describes the <code>permissions</code> required to successfully run the Operator. Ensure that the{' '}
-            <code>serviceAccountName</code> used in the <code>deployment</code> spec matches one of the Roles described
-            under <code>permissions</code>.
-          </span>
-        ),
-        clusterPermissions: (
-          <span>
-            Describes the <code>clusterPermissions</code> required to successfully run the Operator. Ensure that the{' '}
-            <code>serviceAccountName</code> used in the <code>deployment</code> spec matches one of the Roles described
-            under <code>clusterPermissions</code>.
-          </span>
-        )
+        permissions: {
+          serviceAccountName: 'The name of the Service Account being granted the permissions.'
+        },
+        clusterPermissions: {
+          serviceAccountName: 'The name of the Service Account being granted the permissions.'
+        }
       }
     },
     labels: <span>Any key/value pairs used to organize this Cluster Service Version (CSV) object.</span>,
@@ -131,6 +123,28 @@ const operatorObjectDescriptions = {
       required: {
         description: `Relying on other "required" CRDs is completely optional and only exists to reduce the scope of
         individual Operators and provide a way to compose multiple Operators together to solve an end-to-end use case.`
+      }
+    },
+    install: {
+      spec: {
+        permissions: {
+          description: (
+            <span>
+              Describes the <code>permissions</code> required to successfully run the Operator. Ensure that the{' '}
+              <code>serviceAccountName</code> used in the <code>deployment</code> spec matches one of the Roles
+              described under <code>permissions</code>.
+            </span>
+          )
+        },
+        clusterPermissions: {
+          description: (
+            <span>
+              Describes the <code>clusterPermissions</code> required to successfully run the Operator. Ensure that the{' '}
+              <code>serviceAccountName</code> used in the <code>deployment</code> spec matches one of the Roles
+              described under <code>clusterPermissions</code>.
+            </span>
+          )
+        }
       }
     }
   }

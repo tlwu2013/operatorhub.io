@@ -161,7 +161,7 @@ class OperatorEditorPage extends React.Component {
       <EditorSection
         operator={operator}
         title="Permissions"
-        description={_.get(operatorFieldDescriptions, 'spec.install.spec.permissions')}
+        description={_.get(operatorObjectDescriptions, 'spec.install.spec.permissions.description')}
         history={history}
         sectionLocation="permissions"
       />
@@ -174,7 +174,7 @@ class OperatorEditorPage extends React.Component {
       <EditorSection
         operator={operator}
         title="Cluster Permissions"
-        description={_.get(operatorFieldDescriptions, 'spec.install.spec.clusterPermissions')}
+        description={_.get(operatorObjectDescriptions, 'spec.install.spec.clusterPermissions.description')}
         history={history}
         sectionLocation="cluster-permissions"
       />
