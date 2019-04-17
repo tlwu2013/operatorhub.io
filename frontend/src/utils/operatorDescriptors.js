@@ -166,54 +166,18 @@ const installModeDescriptors = {
 };
 
 const categoryOptions = [
-  {
-    value: 'AI/Machine Learning',
-    label: 'AI/Machine Learning'
-  },
-  {
-    value: 'Big Data',
-    label: 'Big Data'
-  },
-  {
-    value: 'Cloud Provider',
-    label: 'Cloud Provider'
-  },
-  {
-    value: 'Database',
-    label: 'Database'
-  },
-  {
-    value: 'Integration & Delivery',
-    label: 'Integration & Delivery'
-  },
-  {
-    value: 'Logging & Tracing',
-    label: 'Logging & Tracing'
-  },
-  {
-    value: 'Monitoring',
-    label: 'Monitoring'
-  },
-  {
-    value: 'Networking',
-    label: 'Networking'
-  },
-  {
-    value: 'OpenShift Optional',
-    label: 'OpenShift Optional'
-  },
-  {
-    value: 'Security',
-    label: 'Security'
-  },
-  {
-    value: 'Storage',
-    label: 'Storage'
-  },
-  {
-    value: 'Streaming & Messaging',
-    label: 'Streaming & Messaging'
-  }
+  'AI/Machine Learning',
+  'Big Data',
+  'Cloud Provider',
+  'Database',
+  'Integration & Delivery',
+  'Logging & Tracing',
+  'Monitoring',
+  'Networking',
+  'OpenShift Optional',
+  'Security',
+  'Storage',
+  'Streaming & Messaging'
 ];
 
 const operatorFieldPlaceholders = {

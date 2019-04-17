@@ -1,7 +1,6 @@
 import * as React from 'react';
 import * as _ from 'lodash-es';
 import classNames from 'classnames';
-import Select from 'react-select';
 
 import {
   operatorFieldDescriptions,
@@ -9,6 +8,7 @@ import {
   operatorFieldValidators
 } from '../../utils/operatorDescriptors';
 import { getFieldValueError } from '../../utils/operatorUtils';
+import EditorSelect from '../../components/editor/EditorSelect';
 
 const EDITOR_STATUS = {
   empty: 'empty',
@@ -44,42 +44,23 @@ const renderOperatorFormField = (
 
   if (fieldType === 'select' || fieldType === 'multi-select') {
     const fieldValue = _.get(operator, field);
-    let value;
+    let values;
     if (fieldType === 'select') {
-      value = _.find(options, { value: fieldValue });
+      values = [fieldValue];
     } else {
-      const fieldValues = _.isString(fieldValue) ? _.split(fieldValue, ',') : fieldValue;
-      value = _.filter(options, option => _.find(fieldValues, nextValue => nextValue.trim() === option.value));
+      values = _.isString(fieldValue) ? _.split(fieldValue, ',') : fieldValue;
     }
 
     inputComponent = (
-      <Select
-        className="oh-operator-editor-form__select"
-        value={value}
-        placeholder={_.get(operator, field, `Select a ${title}`)}
+      <EditorSelect
         id={_.camelCase(field)}
-        isMulti={fieldType === 'multi-select'}
+        values={values}
         options={options}
-        isSearchable={false}
-        styles={{
-          control: base => ({
-            ...base,
-            '&:hover': { borderColor: '#eaeaea' },
-            border: '1px solid #eaeaea',
-            boxShadow: 'none'
-          })
-        }}
-        onChange={option => {
-          const values = _.reduce(
-            option,
-            (selections, selection) => {
-              selections.push(selection.value);
-              return selections;
-            },
-            []
-          );
-
-          updateOperator(_.join(values, ', '), field);
+        isMulti={fieldType === 'multi-select'}
+        placeholder={_.get(operator, field, `Select a ${title}`)}
+        onChange={selections => {
+          console.dir(selections);
+          updateOperator(_.join(selections, ', '), field);
         }}
         onBlur={() => commitField(field)}
       />
@@ -145,43 +126,23 @@ const renderObjectFormField = (
 
   if (fieldType === 'select' || fieldType === 'multi-select') {
     const fieldValue = _.get(formObject, objectField);
-    let value;
+    let values;
     if (fieldType === 'select') {
-      value = _.find(options, { value: fieldValue });
+      values = [fieldValue];
     } else {
-      const fieldValues = _.isString(fieldValue) ? _.split(fieldValue, ',') : fieldValue;
-      value = _.filter(options, option => _.find(fieldValues, nextValue => nextValue.trim() === option.value));
+      values = _.isString(fieldValue) ? _.split(fieldValue, ',') : fieldValue;
     }
 
     inputComponent = (
-      <Select
-        className="oh-operator-editor-form__select"
-        value={value}
-        placeholder={_.get(formObject, objectField, `Select a ${title}`)}
+      <EditorSelect
         id={_.camelCase(field)}
-        isMulti={fieldType === 'multi-select'}
+        values={values}
         options={options}
-        isSearchable={false}
-        ref={inputRefCallback}
-        styles={{
-          control: base => ({
-            ...base,
-            '&:hover': { borderColor: '#eaeaea' },
-            border: '1px solid #eaeaea',
-            boxShadow: 'none'
-          })
-        }}
-        onChange={option => {
-          const values = _.reduce(
-            option,
-            (selections, selection) => {
-              selections.push(selection.value);
-              return selections;
-            },
-            []
-          );
-
-          updateObject(_.join(values, ', '), objectField);
+        isMulti={fieldType === 'multi-select'}
+        placeholder={_.get(formObject, objectField, `Select a ${title}`)}
+        onChange={selections => {
+          console.dir(selections);
+          updateObject(_.join(selections, ', '), objectField);
         }}
         onBlur={() => commitField(field)}
       />

@@ -248,7 +248,7 @@
       font-weight: normal;
     }
 
-    input, textarea, &__select {
+    input, textarea {
       border: 1px solid $oh-color-rule;
       border-bottom: 2px solid $oh-color-text-light;
       color: $oh-color-text-body;
@@ -267,7 +267,25 @@
     }
 
     &__select {
+      color: $oh-color-text-body;
+      font-size: 14px;
+      padding-top: 1px;
+
+      .form-control {
+        border: 1px solid $oh-color-rule;
+        border-bottom: 2px solid $oh-color-text-light;
+        color: $oh-color-text-body;
+      }
+
+      &::placeholder {
+        font-size: 14px;
+      }
+
+      .rbt-token.rbt-token-removeable, .dropdown-menu {
+        font-size: 14px;
+      }
     }
+
 
     .oh-operator-editor-form__field--error {
       input, textarea, &__select {
@@ -397,7 +415,7 @@
       }
     }
 
-    &__rule-resource-col {
+    &__rule-verb-col {
       position: relative;
       padding-right: 20px;
 

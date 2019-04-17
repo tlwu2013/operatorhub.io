@@ -2,8 +2,8 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import * as _ from 'lodash-es';
 import classNames from 'classnames';
-import Select from 'react-select';
 import { Icon } from 'patternfly-react';
+import EditorSelect from './EditorSelect';
 
 const RESOURCES = [
   '*',
@@ -78,6 +78,21 @@ class RulesEditor extends React.Component {
     this.forceUpdate();
   };
 
+  updateRuleSelections = (rule, field, selections) => {
+    // wildcard can be the only entry if selected, on add of wildcard remove the others, on add of anything else remove the wildcard
+    if (selections.includes('*') && selections.length > 1) {
+      const prevSelections = _.get(rule, field);
+      if (prevSelections.includes('*')) {
+        this.updateRule(rule, field, _.filter(selections, selection => selection !== '*'));
+        return;
+      }
+      this.updateRule(rule, field, _.filter(selections, selection => selection === '*'));
+      return;
+    }
+
+    this.updateRule(rule, field, selections);
+  };
+
   onFieldBlur = rule => {
     const { onUpdate } = this.props;
     const { rules } = this.state;
@@ -104,54 +119,8 @@ class RulesEditor extends React.Component {
     }
   };
 
-  renderSelector = (rule, field, options) => {
-    const fieldValues = _.get(rule, field);
-    const values = _.filter(options, option => _.find(fieldValues, nextValue => nextValue.trim() === option.value));
-
-    return (
-      <Select
-        className="oh-operator-editor-form__select"
-        value={values}
-        placeholder={`Select ${field}`}
-        id={`${field}-Select`}
-        isMulti
-        options={options}
-        isSearchable
-        styles={{
-          control: base => ({
-            ...base,
-            '&:hover': { borderColor: '#eaeaea' },
-            border: '1px solid #eaeaea',
-            boxShadow: 'none'
-          })
-        }}
-        onChange={(selectedOptions, selectAction) => {
-          if (selectAction.action === 'select-option') {
-            if (_.find(selectedOptions, { value: '*' })) {
-              this.updateRule(rule, field, [selectAction.option.value]);
-              return;
-            }
-          }
-          const selected = _.reduce(
-            selectedOptions,
-            (selections, selection) => {
-              selections.push(selection.value);
-              return selections;
-            },
-            []
-          );
-
-          this.updateRule(rule, field, selected);
-        }}
-        onBlur={() => this.onFieldBlur(rule)}
-      />
-    );
-  };
-
   renderRule = (rule, index) => {
     const removeRuleClass = classNames('remove-label', { disabled: this.areRulesEmpty() });
-    const resourceOptions = _.map(RESOURCES, resource => ({ value: resource, label: resource }));
-    const verbOptions = _.map(VERBS, verb => ({ value: verb, label: verb }));
 
     return (
       <div key={index} className="oh-operator-editor-form__field row">
@@ -165,10 +134,29 @@ class RulesEditor extends React.Component {
             placeholder={`e.g. ""`}
           />
         </div>
-        <div className="form-group col-sm-4">{this.renderSelector(rule, 'resources', resourceOptions)}</div>
+        <div className="form-group col-sm-4">
+          <EditorSelect
+            id="resource-select"
+            values={_.get(rule, 'resources')}
+            options={RESOURCES}
+            customSelect
+            placeholder="Select resources"
+            onChange={(selections, e) => this.updateRuleSelections(rule, 'resources', selections)}
+            onBlur={() => this.onFieldBlur(rule)}
+            dropup
+          />
+        </div>
         <div className="col-sm-4">
-          <div className="form-group oh-operator-editor-form__rule-resource-col">
-            {this.renderSelector(rule, 'verbs', verbOptions)}
+          <div className="form-group oh-operator-editor-form__rule-verb-col">
+            <EditorSelect
+              id="verbs-select"
+              values={_.get(rule, 'verbs')}
+              options={VERBS}
+              placeholder="Select verbs"
+              onChange={(selections, e) => this.updateRuleSelections(rule, 'verbs', selections)}
+              onBlur={() => this.onFieldBlur(rule)}
+              dropup
+            />
             <a href="#" className={removeRuleClass} onClick={e => this.removeRule(e, rule)}>
               <Icon type="fa" name="trash" />
               <span className="sr-only">Remove Rule</span>
